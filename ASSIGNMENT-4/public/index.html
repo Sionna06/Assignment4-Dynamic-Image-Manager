@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Image Fetcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .search-container {
+            margin: 20px 0;
+        }
+        #searchInput {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+        }
+        #searchButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #searchButton:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        #imageContainer {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Character Image Fetcher</h1>
+    
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Enter character name (e.g., tom, jerry)">
+        <button id="searchButton">Fetch Image</button>
+    </div>
+    
+    <div id="result"></div>
+    <div id="imageContainer"></div>
+
+    <script>
+        document.getElementById('searchButton').addEventListener('click', fetchImage);
+        
+        async function fetchImage() {
+            const characterName = document.getElementById('searchInput').value.trim();
+            
+            if (!characterName) {
+                alert('Please enter a character name');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/getImage?name=${encodeURIComponent(characterName)}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('result').innerHTML = `<p>Found image: ${data.filename}</p>`;
+                    // In a real implementation, we would display the actual image
+                    // For now, we'll just show a placeholder
+                    document.getElementById('imageContainer').innerHTML = `
+                        <p>Image would be displayed here in a real implementation:</p>
+                        <div style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
+                            <p>[${data.filename}]</p>
+                            <p><em>(Placeholder for image: ${data.filename})</em></p>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `<p>Error: ${data.error}</p>`;
+                    document.getElementById('imageContainer').innerHTML = '';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Error fetching image: ${error.message}</p>`;
+                document.getElementById('imageContainer').innerHTML = '';
+            }
+        }
+    </script>
+</body>
+</html>
