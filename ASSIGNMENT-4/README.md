@@ -25,6 +25,7 @@ assignment-4/
 The backend is an Express.js server that:
 1. Serves static files from the `/public` directory
 2. Implements a GET route at `/api/getImage` that takes a query parameter (e.g., `?name=tom`) and returns the corresponding image filename
+3. Implements a POST route at `/api/upload` that accepts an image file and a character name, then saves the image in the `/public` directory
 
 To run the backend server:
 1. Navigate to the `backend` directory
@@ -52,8 +53,13 @@ To run the React frontend:
 
 Note: For the React frontend to work properly with the backend, you would typically need to configure a proxy or handle CORS. In a production environment, you would build the React app and serve it through the Express server.
 
-## API Endpoint
+## API Endpoints
 
-GET `/api/getImage?name={characterName}`
+### GET `/api/getImage?name={characterName}`
 - Returns JSON with the filename of the image
 - Example response: `{ "filename": "tom.jpg" }`
+
+### POST `/api/upload?name={characterName}`
+- Accepts a multipart form data with an image file
+- Saves the image in the `/public` directory with the specified character name
+- Example response: `{ "message": "File uploaded successfully", "filename": "tom.jpg" }`

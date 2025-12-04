@@ -16,8 +16,17 @@
   margin-bottom: 30px;
 }
 
-.search-form {
+.upload-section, .search-section {
   margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.upload-section h2, .search-section h2 {
+  margin-top: 0;
+  color: #333;
 }
 
 .input-group {
@@ -27,7 +36,7 @@
   flex-wrap: wrap;
 }
 
-.search-input {
+.search-input, .name-input {
   padding: 12px 15px;
   font-size: 16px;
   border: 2px solid #ddd;
@@ -35,7 +44,15 @@
   min-width: 300px;
 }
 
-.search-button {
+.file-input {
+  padding: 12px 15px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  min-width: 200px;
+}
+
+.search-button, .upload-button {
   padding: 12px 25px;
   font-size: 16px;
   background-color: #007bff;
@@ -46,8 +63,16 @@
   transition: background-color 0.3s;
 }
 
-.search-button:hover:not(:disabled) {
+.upload-button {
+  background-color: #28a745;
+}
+
+.search-button:hover:not(:disabled), .upload-button:hover {
   background-color: #0056b3;
+}
+
+.upload-button:hover {
+  background-color: #218838;
 }
 
 .search-button:disabled {
@@ -55,13 +80,19 @@
   cursor: not-allowed;
 }
 
-.error-message {
+.error-message, .upload-status {
   color: #dc3545;
   background-color: #f8d7da;
   border: 1px solid #f5c6cb;
   padding: 10px;
   border-radius: 4px;
   margin: 15px 0;
+}
+
+.upload-status {
+  color: #0c5460;
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
 }
 
 .result-container {
@@ -118,7 +149,13 @@
     align-items: center;
   }
   
-  .search-input {
+  .search-input, .name-input {
+    min-width: 250px;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .file-input {
     min-width: 250px;
     width: 100%;
     max-width: 300px;

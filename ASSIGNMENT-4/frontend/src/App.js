@@ -6,6 +6,10 @@ function App() {
   const [imageData, setImageData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // State for upload functionality
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState('');
 
   const fetchImage = async () => {
     if (!characterName.trim()) {
@@ -33,6 +37,45 @@ function App() {
     }
   };
 
+  const handleFileUpload = async (e) => {
+    e.preventDefault();
+    
+    if (!selectedFile) {
+      setUploadStatus('Please select a file to upload');
+      return;
+    }
+    
+    if (!characterName.trim()) {
+      setUploadStatus('Please enter a character name');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+
+    try {
+      setUploadStatus('Uploading...');
+      
+      const response = await fetch(`/api/upload?name=${encodeURIComponent(characterName.trim())}`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setUploadStatus(`Upload successful: ${data.filename}`);
+        setSelectedFile(null);
+        // Clear any previous image data to encourage re-fetch
+        setImageData(null);
+      } else {
+        setUploadStatus(`Upload failed: ${data.error}`);
+      }
+    } catch (err) {
+      setUploadStatus(`Upload error: ${err.message}`);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     fetchImage();
@@ -43,24 +86,57 @@ function App() {
       <header className="App-header">
         <h1>Character Image Fetcher</h1>
         
-        <form onSubmit={handleSubmit} className="search-form">
-          <div className="input-group">
-            <input
-              type="text"
-              value={characterName}
-              onChange={(e) => setCharacterName(e.target.value)}
-              placeholder="Enter character name (e.g., tom, jerry)"
-              className="search-input"
-            />
-            <button 
-              type="submit" 
-              disabled={loading}
-              className="search-button"
-            >
-              {loading ? 'Fetching...' : 'Fetch Image'}
-            </button>
-          </div>
-        </form>
+        {/* Upload Section */}
+        <div className="upload-section">
+          <h2>Upload Character Image</h2>
+          <form onSubmit={handleFileUpload} className="upload-form">
+            <div className="input-group">
+              <input
+                type="text"
+                value={characterName}
+                onChange={(e) => setCharacterName(e.target.value)}
+                placeholder="Enter character name (e.g., tom, jerry)"
+                className="name-input"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setSelectedFile(e.target.files[0])}
+                className="file-input"
+              />
+              <button 
+                type="submit" 
+                className="upload-button"
+              >
+                Upload Image
+              </button>
+            </div>
+          </form>
+          {uploadStatus && <div className="upload-status">{uploadStatus}</div>}
+        </div>
+        
+        {/* Search Section */}
+        <div className="search-section">
+          <h2>Find Character Image</h2>
+          <form onSubmit={handleSubmit} className="search-form">
+            <div className="input-group">
+              <input
+                type="text"
+                value={characterName}
+                onChange={(e) => setCharacterName(e.target.value)}
+                placeholder="Enter character name (e.g., tom, jerry)"
+                className="search-input"
+              />
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="search-button"
+              >
+                {loading ? 'Fetching...' : 'Fetch Image'}
+              </button>
+            </div>
+          </form>
+        </div>
 
         {error && <div className="error-message">{error}</div>}
         

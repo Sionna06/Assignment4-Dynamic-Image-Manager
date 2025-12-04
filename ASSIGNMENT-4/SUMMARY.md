@@ -9,20 +9,28 @@
    - Returns the corresponding image filename from the `/public` folder
    - Checks if the file actually exists before returning it
    - Returns appropriate error messages for missing parameters or files
+3. Implemented a POST route at `/api/upload` that:
+   - Accepts an image file and a character name via multipart form data
+   - Saves the uploaded image in the `/public` directory with the specified character name
+   - Overwrites any existing file with the same name
+   - Returns a success message with the filename upon successful upload
 
 ### Files Created:
 - `backend/server.js` - Main server implementation
 - `backend/package.json` - Dependencies and scripts
 
-### API Endpoint:
-```
-GET /api/getImage?name={characterName}
-```
+### API Endpoints:
+#### GET `/api/getImage?name={characterName}`
+- Returns JSON with the filename of the image
+- Example responses:
+  - Success: `{ "filename": "tom.jpg" }`
+  - Error (missing parameter): `{ "error": "Name parameter is required" }`
+  - Error (file not found): `{ "error": "Image 'invalid.jpg' not found" }`
 
-Example responses:
-- Success: `{ "filename": "tom.jpg" }`
-- Error (missing parameter): `{ "error": "Name parameter is required" }`
-- Error (file not found): `{ "error": "Image 'invalid.jpg' not found" }`
+#### POST `/api/upload?name={characterName}`
+- Accepts multipart form data with an image file
+- Saves the image in the `/public` directory with the specified character name
+- Example response: `{ "message": "File uploaded successfully", "filename": "tom.jpg" }`
 
 ## Frontend Implementation
 
@@ -38,6 +46,9 @@ Example responses:
 - Enhanced UI with better styling and user experience
 - Form validation and loading states
 - Responsive design
+- Added upload functionality with file input and character name input
+- Separate sections for uploading and searching images
+- Upload status messages for user feedback
 
 ### Files Created:
 - `frontend/src/App.js` - Main React component
@@ -54,7 +65,7 @@ Example responses:
 
 ### Backend:
 1. Navigate to `backend/` directory
-2. Run `npm install` to install dependencies
+2. Run `npm install` to install dependencies (including multer for file uploads)
 3. Run `npm start` to start the server
 4. Server runs on http://localhost:3000
 
@@ -75,7 +86,10 @@ Example responses:
    - Loading states
    - Form validation
    - Responsive design
+   - Upload functionality with status feedback
 4. The simple HTML frontend demonstrates the core functionality with minimal code
+5. Multer is used for handling multipart form data in file uploads
+6. Uploaded files are stored in the `/public` directory and served as static assets
 
 ## Limitations Due to Environment
 
