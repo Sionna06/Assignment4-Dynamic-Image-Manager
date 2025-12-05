@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Manager</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        
+        .search-section, .upload-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-section h2, .upload-section h2 {
+            color: #333;
+            border-bottom: 2px solid #4285f4;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .image-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .message {
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .stored-images {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f1f3f4;
+            border-radius: 4px;
+        }
+        
+        .stored-images h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .image-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .image-item {
+            background-color: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .image-item:hover {
+            background-color: #dee2e6;
+            transform: scale(1.05);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+            }
+            
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Image Manager</h1>
+        <p>Standalone image search and upload application</p>
+    </header>
+    
+    <main>
+        <section class="search-section">
+            <h2>🔍 Search Image</h2>
+            <form id="searchForm">
+                <div class="form-group">
+                    <label for="searchName">Character Name:</label>
+                    <input type="text" id="searchName" placeholder="Enter character name (e.g., tom, jerry)" autocomplete="off">
+                </div>
+                <button type="submit">Search Image</button>
+            </form>
+            
+            <div id="searchMessage" class="message" style="display: none;"></div>
+            
+            <div class="image-container">
+                <div id="searchedImageContainer"></div>
+            </div>
+        </section>
+        
+        <section class="upload-section">
+            <h2>📤 Upload Image</h2>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="uploadName">Character Name:</label>
+                    <input type="text" id="uploadName" placeholder="Enter character name (e.g., tom, jerry)" autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label for="imageFile">Select Image:</label>
+                    <input type="file" id="imageFile" accept="image/*">
+                </div>
+                
+                <button type="submit">Upload Image</button>
+            </form>
+            
+            <div id="uploadMessage" class="message" style="display: none;"></div>
+            
+            <div class="stored-images">
+                <h3>Stored Images</h3>
+                <div id="storedImagesList" class="image-list">
+                    <p>No images stored yet. Upload some images to see them here.</p>
+                </div>
+                <p><small>Images are stored in your browser's localStorage and will persist until you clear your browser data.</small></p>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Image Manager &copy; 2025 | All data stored locally in your browser</p>
+    </footer>
+
+    <script>
+        // Constants
+        const STORAGE_KEY = 'image_manager_data';
+        
+        // App initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStoredImages();
+            
+            // Event listeners
+            document.getElementById('searchForm').addEventListener('submit', searchImage);
+            document.getElementById('uploadForm').addEventListener('submit', uploadImage);
+        });
+        
+        // Search for an image
+        function searchImage(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('searchName').value.trim().toLowerCase();
+            const messageEl = document.getElementById('searchMessage');
+            const containerEl = document.getElementById('searchedImageContainer');
+            
+            // Reset UI
+            messageEl.style.display = 'none';
+            containerEl.innerHTML = '';
+            
+            if (!name) {
+                showMessage(messageEl, 'Please enter a character name', 'error');
+                return;
+            }
+            
+            // Look for image
+            const imageData = getImageFromStorage(name);
+            
+            if (imageData) {
+                const img = document.createElement('img');
+                img.src = imageData.data;
+                img.alt = imageData.name;
+                containerEl.appendChild(img);
+                
+                showMessage(messageEl, `Found image for "${name}"`, 'success');
+            } else {
+                showMessage(messageEl, `No image found for "${name}"`, 'error');
+            }
+            
+            messageEl.style.display = 'block';
+        }
+        
+        // Upload an image
+        function uploadImage(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('uploadName').value.trim().toLowerCase();
+            const fileInput = document.getElementById('imageFile');
+            const messageEl = document.getElementById('uploadMessage');
+            
+            // Reset message
+            messageEl.style.display = 'none';
+            
+            // Validation
+            if (!name) {
+                showMessage(messageEl, 'Please enter a character name', 'error');
+                return;
+            }
+            
+            if (!fileInput.files.length) {
+                showMessage(messageEl, 'Please select an image file', 'error');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            
+            // File type check
+            if (!file.type.startsWith('image/')) {
+                showMessage(messageEl, 'Please select a valid image file', 'error');
+                return;
+            }
+            
+            // Process file
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    saveImageToStorage(name, e.target.result);
+                    
+                    showMessage(messageEl, `Image for "${name}" uploaded successfully!`, 'success');
+                    
+                    // Reset form
+                    document.getElementById('uploadForm').reset();
+                    
+                    // Refresh image list
+                    loadStoredImages();
+                    
+                    // Update search view if needed
+                    const searchName = document.getElementById('searchName').value.trim().toLowerCase();
+                    if (searchName === name) {
+                        const searchMessageEl = document.getElementById('searchMessage');
+                        const searchContainerEl = document.getElementById('searchedImageContainer');
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = name;
+                        searchContainerEl.innerHTML = '';
+                        searchContainerEl.appendChild(img);
+                        
+                        showMessage(searchMessageEl, `Updated image for "${name}"`, 'success');
+                        searchMessageEl.style.display = 'block';
+                    }
+                } catch (error) {
+                    showMessage(messageEl, 'Error saving image: ' + error.message, 'error');
+                }
+            };
+            
+            reader.onerror = function() {
+                showMessage(messageEl, 'Error reading file', 'error');
+            };
+            
+            reader.readAsDataURL(file);
+            messageEl.style.display = 'block';
+        }
+        
+        // Save image data
+        function saveImageToStorage(name, data) {
+            let images = getStoredImages();
+            
+            images[name] = {
+                name: name,
+                data: data,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(images));
+        }
+        
+        // Retrieve image data
+        function getImageFromStorage(name) {
+            const images = getStoredImages();
+            return images[name] || null;
+        }
+        
+        // Get all images
+        function getStoredImages() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                return data ? JSON.parse(data) : {};
+            } catch (error) {
+                console.error('Storage error:', error);
+                return {};
+            }
+        }
+        
+        // Display stored images
+        function loadStoredImages() {
+            const images = getStoredImages();
+            const container = document.getElementById('storedImagesList');
+            
+            container.innerHTML = '';
+            
+            const names = Object.keys(images);
+            
+            if (names.length === 0) {
+                container.innerHTML = '<p>No images stored yet. Upload some images to see them here.</p>';
+                return;
+            }
+            
+            names.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'image-item';
+                item.textContent = name;
+                item.title = `Click to search for ${name}`;
+                item.addEventListener('click', function() {
+                    document.getElementById('searchName').value = name;
+                    const event = new Event('submit');
+                    document.getElementById('searchForm').dispatchEvent(event);
+                });
+                container.appendChild(item);
+            });
+        }
+        
+        // Display message
+        function showMessage(element, text, type) {
+            element.textContent = text;
+            element.className = 'message ' + type;
+        }
+    </script>
+</body>
+</html>
